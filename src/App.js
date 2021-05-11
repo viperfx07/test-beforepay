@@ -114,6 +114,7 @@ function App() {
 						<TimelineStep
 							key={childStep.name}
 							icon={childStep.icon}
+							borderClassName="border-primary"
 						>
 							<Textbox
 								name={childStep.name}

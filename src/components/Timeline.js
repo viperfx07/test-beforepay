@@ -4,13 +4,14 @@ import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 
 export const TimelineStep = ({
 	className,
+	borderClassName="border-secondary",
 	title,
 	icon,
 	isActive,
 	isPassed,
 	children
 }) => {
-	const defaultClassName = "rounded-full border-2 border-secondary bg-white transform -translate-x-1/2 w-9.5 h-9.5 inline-flex flex-shrink-0 justify-center items-center"
+	const defaultClassName = `rounded-full border-2 ${borderClassName} bg-white transform -translate-x-1/2 w-9.5 h-9.5 inline-flex flex-shrink-0 justify-center items-center`
 
 	return (
 		<div className="relative my-10 text-brown flex">
