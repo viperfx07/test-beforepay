@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { faBriefcase, faBriefcaseMedical, faUserPlus } from '@fortawesome/free-solid-svg-icons'
-import axios from 'axios'
 
+import * as api from './api';
 import logo from './logo.png'
 import Button from './components/Button'
 import Timeline, { TimelineStep } from './components/Timeline'
@@ -10,20 +10,60 @@ import Dropdown from './components/Dropdown'
 
 
 function App() {
-	const [activeStepIndex, setActiveStepIndex] = useState(0)
+	const [activeStepIndex, setActiveStepIndex] = useState(1)
 	const [formData, setFormData] = useState({
-		employmentDetails: '',
+		employmentStatus: '',
+		bankConnection: '',
+		idCheck: '',
 	})
 
 
-	const submitEmploymentDetails = async () => {
+	const submitData = async () => {
 		try {
-			await axios.post('http://httpbin.org/post', formData)
+			api.submitData(formData)
 			alert('submission ok')
 		} catch (e) {
 			alert('error')
 		}
 	}
+
+	const handleInputChange = (e) => {
+		setFormData((prevState) => ({
+			...prevState,
+			[`${e.target.name}`]: e.target.value,
+		}))
+	}
+
+	const childSteps = [
+		{
+			name: 'bankConnection',
+			label: 'Bank connection',
+			icon: faBriefcase,
+		},
+		{
+			name: 'idCheck',
+			label: 'ID check',
+			icon: faBriefcase,
+		},
+	]
+
+	const employmentStatusDropdownOptions = [
+		{
+			value: '',
+			label: 'Employment status',
+			desc: null,
+		},
+		{
+			value: 'fulltime',
+			label: 'Full Time',
+			desc: 'You work more than 38 hours per week',
+		},
+		{
+			value: 'parttime',
+			label: 'Part time',
+			desc: 'You work less than 38 hours per week',
+		},
+	]
 
 	const steps = [
 		{
@@ -34,35 +74,25 @@ function App() {
 			title: 'Employment Details',
 			icon: faBriefcaseMedical,
 			children: (
-				<>
+				<div className="mt-10">
 					<Dropdown
-						className="block"
-						name="employment status"
+						className="block mt-"
+						name="employmentStatus"
 						label="Employment Status"
-						onChange={(e) => {
-							setFormData(prevState => ({
-								...prevState,
-								employmentDetails: e.target.value,
-							}))
-						}}
-					>
-						<option value="">Choose</option>
-						<option value="Full time">Full-time</option>
-						<option value="Part time">Part-time</option>
-					</Dropdown>
-					{
-						formData.employmentDetails && (
-							<Button
-								className="mt-12"
-								onClick={() => {
-								setActiveStepIndex(activeStepIndex + 1);
-								submitEmploymentDetails()
-							}}>
-								Next
-							</Button>
-						)
-					}
-				</>
+						onChange={handleInputChange}
+						options={employmentStatusDropdownOptions}
+					/>
+					{formData.employmentStatus && (
+						<Button
+							className="mt-12"
+							onClick={() => {
+								submitData()
+							}}
+						>
+							Next
+						</Button>
+					)}
+				</div>
 			),
 		},
 	]
@@ -79,16 +109,20 @@ function App() {
 				</div>
 			</div>
 			<div className="flex-auto w-2/3 pr-30">
-				<Timeline
-					steps={steps}
-					activeStepIndex={activeStepIndex}
-				>
-					<TimelineStep icon={faBriefcase}>
-						<Textbox label="Bank connection"></Textbox>
-					</TimelineStep>
-					<TimelineStep icon={faBriefcase}>
-						<Textbox label="ID check"></Textbox>
-					</TimelineStep>
+				<Timeline steps={steps} activeStepIndex={activeStepIndex}>
+					{childSteps.map(childStep => (
+						<TimelineStep
+							key={childStep.name}
+							icon={childStep.icon}
+						>
+							<Textbox
+								name={childStep.name}
+								value={formData[childStep.name]}
+								label={childStep.label}
+								onChange={handleInputChange}
+							></Textbox>
+						</TimelineStep>
+					))}
 				</Timeline>
 			</div>
 		</div>
